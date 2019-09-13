@@ -6,15 +6,8 @@ let pad_lock = [|
   [|Some(7), Some(8), Some(9)|],
 |];
 
-let getVals = ((i, j)) =>
-  switch (pad_lock[i]) {
-  | Some(new_pad) =>
-    switch (new_pad[j]) {
-    | None => None
-    | res => res
-    }
-  | None => None
-  };
+let getVals = ((i, j)): option(int) =>
+  pad_lock[i]->Option.flatMap(arr => arr[j])->Option.flatMap(res => res);
 
 let moves = [
   (2, 1),
