@@ -8,8 +8,6 @@ type t('a) =
   | Empty
   | Node('a, list(t('a)));
 
-exception Empty_tree;
-
 /* \subsection{Planar Tree functions} */
 
 /* \subsubsection{Insertion and Deletion} */
@@ -24,11 +22,11 @@ let node = (n, children) => Node(n, children);
 /* [fold]: Fold function for trees. */
 let rec fold = f =>
   fun
-  | Empty => raise(Empty_tree)
+  | Empty => [[]]
   | Node(a, lst) => f(a, List.map(lst, fold(f)));
 
 /* [paths] : list of all paths from root node to other nodes in tree */
-let paths = t =>
+let paths = (t: t('a)): list(list('a)) =>
   fold(
     (x, lst) =>
       switch (lst) {

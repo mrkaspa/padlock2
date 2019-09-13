@@ -1,13 +1,13 @@
 open Belt;
 
-let pad_lock = [|
+let padLock = [|
   [|None, Some(2), Some(3)|],
   [|Some(4), None, Some(6)|],
   [|Some(7), Some(8), Some(9)|],
 |];
 
 let getVals = ((i, j)): option(int) =>
-  pad_lock[i]->Option.flatMap(arr => arr[j])->Option.flatMap(res => res);
+  padLock[i]->Option.flatMap(arr => arr[j])->Option.flatMap(res => res);
 
 let moves = [
   (2, 1),
@@ -30,7 +30,7 @@ module PairComparator =
       };
   });
 
-let pos_solutions = ((i, j) as idx, cache) =>
+let posSolutions = ((i, j) as idx, cache) =>
   switch (Map.get(cache, idx)) {
   | Some(sols) => (sols, cache)
   | None =>
@@ -55,20 +55,20 @@ let pos_solutions = ((i, j) as idx, cache) =>
     (sols, Map.set(cache, idx, sols));
   };
 
-let rec find_n_combinations = ((i, j) as idx, depth, max_depth, ~cache) =>
+let rec findCombinations = ((i, j) as idx, depth, max_depth, ~cache) =>
   if (depth > max_depth) {
     switch (getVals((i, j))) {
     | Some(_) => Tree.leaf((depth, idx))
     | None => Empty
     };
   } else {
-    let (pos, cache) = pos_solutions(idx, cache);
+    let (pos, cache) = posSolutions(idx, cache);
     let children =
       List.reduce(
         pos,
         [],
         (nodes, elem) => {
-          let child = find_n_combinations(elem, depth + 1, max_depth, ~cache);
+          let child = findCombinations(elem, depth + 1, max_depth, ~cache);
           switch (child) {
           | Node(_) as inner => [inner, ...nodes]
           | _ => nodes
@@ -80,7 +80,7 @@ let rec find_n_combinations = ((i, j) as idx, depth, max_depth, ~cache) =>
   };
 
 let map = Map.make(~id=(module PairComparator));
-find_n_combinations((0, 2), 0, 4, ~cache=map)
+findCombinations((0, 2), 0, 4, ~cache=map)
 ->Tree.paths
 ->List.keep(ls => List.length(ls) == 4)
 ->List.forEach(path => {
