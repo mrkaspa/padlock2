@@ -31,30 +31,32 @@ module PairComparator =
   });
 
 let posSolutions = (~cache=?, (i, j) as idx) => {
-  let cacheOut =
-    Option.getWithDefault(cache, Map.make(~id=(module PairComparator)));
-  switch (Map.get(cacheOut, idx)) {
-  | Some(sols) => (sols, cache)
-  | None =>
-    let sols =
-      List.reduce(
-        moves,
-        [],
-        (ls, (im, jm)) => {
-          let inw = i + im;
-          let jnw = j + jm;
-          if (inw >= 0 && inw < 3 && jnw >= 0 && jnw < 3) {
-            switch (getVals((inw, jnw))) {
-            | Some(_) => [(inw, jnw), ...ls]
-            | None => ls
-            };
-          } else {
-            ls;
+  let solve = () =>
+    List.reduce(
+      moves,
+      [],
+      (ls, (im, jm)) => {
+        let inw = i + im;
+        let jnw = j + jm;
+        if (inw >= 0 && inw < 3 && jnw >= 0 && jnw < 3) {
+          switch (getVals((inw, jnw))) {
+          | Some(_) => [(inw, jnw), ...ls]
+          | None => ls
           };
-        },
-      );
-
-    (sols, Some(Map.set(cacheOut, idx, sols)));
+        } else {
+          ls;
+        };
+      },
+    );
+  switch (cache) {
+  | Some(unwrappedCache) =>
+    switch (Map.get(unwrappedCache, idx)) {
+    | Some(sols) => (sols, Some(unwrappedCache))
+    | None =>
+      let sols = solve();
+      (sols, Some(Map.set(unwrappedCache, idx, sols)));
+    }
+  | None => (solve(), None)
   };
 };
 
