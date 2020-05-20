@@ -55,7 +55,7 @@ let posSolutions = ((i, j) as idx, cache) =>
     (sols, Map.set(cache, idx, sols));
   };
 
-let rec findCombinations = ((i, j) as idx, depth, max_depth, ~cache) =>
+let rec findCombinations = (~depth=0, ~cache, (i, j) as idx, max_depth) =>
   if (depth > max_depth) {
     switch (getVals((i, j))) {
     | Some(_) => Tree.leaf((depth, idx))
@@ -68,7 +68,8 @@ let rec findCombinations = ((i, j) as idx, depth, max_depth, ~cache) =>
         pos,
         [],
         (nodes, elem) => {
-          let child = findCombinations(elem, depth + 1, max_depth, ~cache);
+          let child =
+            findCombinations(~cache, ~depth=depth + 1, elem, max_depth);
           switch (child) {
           | Node(_) as inner => [inner, ...nodes]
           | _ => nodes
@@ -80,7 +81,7 @@ let rec findCombinations = ((i, j) as idx, depth, max_depth, ~cache) =>
   };
 
 let map = Map.make(~id=(module PairComparator));
-findCombinations((0, 2), 0, 4, ~cache=map)
+findCombinations(~cache=map, (0, 2), 4)
 ->Tree.paths
 ->List.keep(ls => List.length(ls) == 4)
 ->List.forEach(path => {
