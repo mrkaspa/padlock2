@@ -30,8 +30,10 @@ module PairComparator =
       };
   });
 
-let posSolutions = ((i, j) as idx, cache) =>
-  switch (Map.get(cache, idx)) {
+let posSolutions = (~cache=?, (i, j) as idx) => {
+  let cacheOut =
+    Option.getWithDefault(cache, Map.make(~id=(module PairComparator)));
+  switch (Map.get(cacheOut, idx)) {
   | Some(sols) => (sols, cache)
   | None =>
     let sols =
@@ -52,24 +54,25 @@ let posSolutions = ((i, j) as idx, cache) =>
         },
       );
 
-    (sols, Map.set(cache, idx, sols));
+    (sols, Some(Map.set(cacheOut, idx, sols)));
   };
+};
 
-let rec findCombinations = (~depth=0, ~cache, (i, j) as idx, max_depth) =>
+let rec findCombinations = (~depth=0, ~cache=?, (i, j) as idx, max_depth) =>
   if (depth > max_depth) {
     switch (getVals((i, j))) {
     | Some(_) => Tree.leaf((depth, idx))
     | None => Empty
     };
   } else {
-    let (pos, cache) = posSolutions(idx, cache);
+    let (pos, cache) = posSolutions(~cache?, idx);
     let children =
       List.reduce(
         pos,
         [],
         (nodes, elem) => {
           let child =
-            findCombinations(~cache, ~depth=depth + 1, elem, max_depth);
+            findCombinations(~cache?, ~depth=depth + 1, elem, max_depth);
           switch (child) {
           | Node(_) as inner => [inner, ...nodes]
           | _ => nodes
