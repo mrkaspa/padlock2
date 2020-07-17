@@ -9,7 +9,7 @@ let padLock = [
 let getVals = ((i, j)): option<int> =>
   padLock[i]->Option.flatMap(arr => arr[j])->Option.flatMap(res => res)
 
-let moves = list[
+let moves = list{
   (2, 1),
   ((-2), 1),
   (2, (-1)),
@@ -18,7 +18,7 @@ let moves = list[
   (1, (-2)),
   ((-1), 2),
   ((-1), (-2)),
-]
+}
 
 module PairComparator =
   Id.MakeComparable({
@@ -34,13 +34,13 @@ let posSolutions = (~cache=?, (i, j) as idx) => {
   let solve = () =>
     List.reduce(
       moves,
-      list[],
+      list{},
       (ls, (im, jm)) => {
         let inw = i + im
         let jnw = j + jm
         if (inw >= 0 && inw < 3 && jnw >= 0 && jnw < 3) {
           switch getVals((inw, jnw)) {
-          | Some(_) => list[(inw, jnw), ...ls]
+          | Some(_) => list{(inw, jnw), ...ls}
           | None => ls
           }
         } else {
@@ -71,12 +71,12 @@ let rec findCombinations = (~depth=0, ~cache=?, (i, j) as idx, max_depth) =>
     let children =
       List.reduce(
         pos,
-        list[],
+        list{},
         (nodes, elem) => {
           let child =
             findCombinations(~cache?, ~depth=depth + 1, elem, max_depth)
           switch child {
-          | Node(_) as inner => list[inner, ...nodes]
+          | Node(_) as inner => list{inner, ...nodes}
           | _ => nodes
           }
         },

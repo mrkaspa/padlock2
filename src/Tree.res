@@ -15,14 +15,14 @@ type rec t<'a> =
 /* [create] : create an empty tree */
 let empty = () => Empty
 
-let leaf = a => Node(a, list[])
+let leaf = a => Node(a, list{})
 
 let node = (n, children) => Node(n, children)
 
 /* [fold]: Fold function for trees. */
 let rec fold = (f, value) =>
   switch value {
-  | Empty => list[list[]]
+  | Empty => list{list{}}
   | Node(a, lst) => f(a, List.map(lst, fold(f)))
   }
 
@@ -31,11 +31,11 @@ let paths = (t: t<'a>): list<list<'a>> =>
   fold(
     (x, lst) =>
       switch lst {
-      | list[] => list[list[x]]
+      | list{} => list{list{x}}
       | _ =>
         List.reduce(
-          List.map(lst, a => List.map(a, b => list[x, ...b])),
-          list[list[x]],
+          List.map(lst, a => List.map(a, b => list{x, ...b})),
+          list{list{x}},
           List.concat
         )
       },
