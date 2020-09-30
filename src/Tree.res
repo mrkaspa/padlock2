@@ -27,17 +27,10 @@ let rec fold = (f, value) =>
   }
 
 /* [paths] : list of all paths from root node to other nodes in tree */
-let paths = (t: t<'a>): list<list<'a>> =>
-  fold(
-    (x, lst) =>
-      switch lst {
-      | list{} => list{list{x}}
-      | _ =>
-        List.reduce(
-          List.map(lst, a => List.map(a, b => list{x, ...b})),
-          list{list{x}},
-          List.concat
-        )
-      },
-    t,
-  )
+let paths = (t: t<'a>): list<list<'a>> => fold((x, lst) =>
+    switch lst {
+    | list{} => list{list{x}}
+    | _ =>
+      List.reduce(List.map(lst, a => List.map(a, b => list{x, ...b})), list{list{x}}, List.concat)
+    }
+  , t)
